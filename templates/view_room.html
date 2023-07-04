@@ -6,12 +6,18 @@
     <title>room</title>
 </head>
 <body>
-    <h1>Room: {{ roomid }}</h1>
+    <h1>Room: {{ room.name }}</h1>
     <div id="messages"></div>
     <form id="msginputform">
         <input type="text" id = "msginput" placeholder="message here...">
         <button type="submit">SEND</button>
     </form>
+
+    <ul>
+        {% for member in room_members %}
+        <li>{{ member._id.username }}</li>
+        {% endfor %}
+    </ul>
     <button id="leave">Leave</button>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js"></script>
@@ -19,7 +25,7 @@
     const socket = io.connect("http://127.0.0.1:5000");
 
     socket.on('connect', function() {
-        socket.emit('join_room', { username : "{{ username }}", roomid : "{{ roomid }}"});
+        socket.emit('join_room', { username : "{{ username }}", roomid : "{{ room._id }}"});
 
         let msg_input = document.getElementById('msginput');
 
@@ -27,7 +33,7 @@
             e.preventDefault();
             let msg = msg_input.value.trim()
             if (msg.length) {
-                socket.emit('send_message',{ username : "{{ username }}", roomid : "{{ roomid }}", msg : msg})
+                socket.emit('send_message',{ username : "{{ username }}", roomid : "{{ room._id }}", msg : msg})
             }
             msg_input.value = '';
             msg_input.focus();
@@ -36,7 +42,7 @@
     })
 
     document.getElementById('leave').onclick = function(){
-        socket.emit('leave_room', { username : "{{ username }}", roomid : "{{ roomid }}" });
+        socket.emit('leave_room', { username : "{{ username }}", roomid : "{{ room._id }}" });
         window.location.href = "http://127.0.0.1:5000/"
     }
 
