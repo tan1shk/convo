@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>room</title>
+</head>
+<body>
+    <h1>Room: {{ roomid }}</h1>
+    <div id="messages"></div>
+    <form id="msginputform">
+        <input type="text" id = "msginput" placeholder="message here...">
+        <button type="submit">SEND</button>
+    </form>
+    <button id="leave">Leave</button>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js"></script>
+<script>
+    const socket = io.connect("http://127.0.0.1:5000");
+
+    socket.on('connect', function() {
+        socket.emit('join_room', { username : "{{ username }}", roomid : "{{ roomid }}"});
+
+        let msg_input = document.getElementById('msginput');
+
+        document.getElementById('msginputform').onsubmit = function (e) {
+            e.preventDefault();
+            let msg = msg_input.value.trim()
+            if (msg.length) {
+                socket.emit('send_message',{ username : "{{ username }}", roomid : "{{ roomid }}", msg : msg})
+            }
+            msg_input.value = '';
+            msg_input.focus();
+        }
+
+    })
+
+    document.getElementById('leave').onclick = function(){
+        socket.emit('leave_room', { username : "{{ username }}", roomid : "{{ roomid }}" });
+        window.location.href = "http://127.0.0.1:5000/"
+    }
+
+
+    socket.on('join_announcement', function(data) {
+        console.log(data);
+        const newA = document.createElement('div');
+        newA.innerHTML = `<b>${data.username}</b> joined`;
+        document.getElementById('messages').appendChild(newA);
+    })
+
+    socket.on('receive_message', function(data){
+        console.log(data);
+        const newA = document.createElement('div');
+        newA.innerHTML = `<b>${data.username}:</b> ${data.msg}`;
+        document.getElementById('messages').appendChild(newA);
+    })
+
+    socket.on('leave_room_announcement', function (data) {
+        console.log(data);
+        const newN = document.createElement('div');
+        newN.innerHTML = `<b>${data.username}</b> has left the room`;
+        document.getElementById('messages').appendChild(newN);
+    });
+
+</script>
+</html>
