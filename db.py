@@ -12,6 +12,7 @@ chat_db = client.get_database("ChatDB")
 user_collection = chat_db.get_collection("users")
 rooms_collection = chat_db.get_collection("rooms")
 room_members_collection = chat_db.get_collection("room_members")
+messages_collection = chat_db.get_collection("messages")
 
 
 
@@ -66,3 +67,14 @@ def is_room_member(room_id, username):
 
 def is_room_admin(room_id, username):
     return room_members_collection.count_documents({'_id': {'room_id': ObjectId(room_id), 'username': username }, 'is_room_admin':True})
+
+
+
+def save_messages(room_id, text, sender):
+    messages_collection.insert_one({'room_id': room_id, 'text': text, 'sender': sender, 'created_at': datetime.now()})
+
+
+def get_messages(room_id):
+    messages = list(messages_collection.find({'room_id': room_id}).sort('created_at',-1).limit(3))
+    messages.reverse()
+    return messages

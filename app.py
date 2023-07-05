@@ -3,7 +3,8 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from flask_socketio import SocketIO, join_room, leave_room
 from pymongo.errors import DuplicateKeyError
 
-from db import get_user, save_user, get_room, save_room, update_room, get_room_members, add_room_members, remove_room_members ,get_rooms_for_user, is_room_member
+from db import get_user, save_user, get_room, save_room, update_room, get_room_members, add_room_members, remove_room_members 
+from db import get_rooms_for_user, is_room_member, save_messages, get_messages
 
 app = Flask(__name__)
 
@@ -100,7 +101,8 @@ def view_room(room_id):
 
     if room and is_room_member(room_id, current_user.username):
         room_members = get_room_members(room_id)
-        return render_template('view_room.html', room=room, room_members=room_members, username=current_user.username)
+        messages = get_messages(room_id)
+        return render_template('view_room.html', room=room, room_members=room_members, username=current_user.username, messages=messages)
     else:
         return "Room not found", 404
 
@@ -146,6 +148,7 @@ def handle_join_room_event(data):
 @socketio.on('send_message')
 def handle_send_message_event(data):
     app.logger.info("{} sent message {} to room {}".format(data['username'],data['msg'], data['roomid']))
+    save_messages(data['roomid'], data['msg'], data['username'])
     socketio.emit('receive_message', data)
 
 

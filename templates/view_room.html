@@ -7,7 +7,11 @@
 </head>
 <body>
     <h1>Room: {{ room.name }}</h1>
-    <div id="messages"></div>
+    <div id="messages">
+        {% for message in messages %}
+        <div><b>{{ message.sender }}:</b> {{ message.text }}</div>
+        {% endfor %}
+    </div>
     <form id="msginputform">
         <input type="text" id = "msginput" placeholder="message here...">
         <button type="submit">SEND</button>
@@ -49,9 +53,11 @@
 
     socket.on('join_announcement', function(data) {
         console.log(data);
-        const newA = document.createElement('div');
-        newA.innerHTML = `<b>${data.username}</b> joined`;
-        document.getElementById('messages').appendChild(newA);
+        if (data.username !== "{{ username }}"){
+            const newA = document.createElement('div');
+            newA.innerHTML = `<b>${data.username}</b> joined`;
+            document.getElementById('messages').appendChild(newA);
+        }
     })
 
     socket.on('receive_message', function(data){
