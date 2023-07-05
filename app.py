@@ -74,6 +74,7 @@ def signup():
 
 
 #chatrooms
+#create room
 @app.route('/create-room/', methods =['GET','POST'])
 @login_required
 def create_room():
@@ -93,7 +94,7 @@ def create_room():
     return render_template('create_room.html', message=message)
 
 
-
+#view room
 @app.route('/rooms/<room_id>/')
 @login_required
 def view_room(room_id):
@@ -106,6 +107,8 @@ def view_room(room_id):
     else:
         return "Room not found", 404
 
+
+#edit room
 @app.route('/rooms/<room_id>/edit', methods = ['GET', 'POST'])
 @login_required
 def edit_room(room_id):

@@ -1,29 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>room</title>
-</head>
-<body>
-    <h1>Room: {{ room.name }}</h1>
-    <div id="messages">
-        {% for message in messages %}
-        <div><b>{{ message.sender }}:</b> {{ message.text }}</div>
-        {% endfor %}
-    </div>
-    <form id="msginputform">
-        <input type="text" id = "msginput" placeholder="message here...">
-        <button type="submit">SEND</button>
-    </form>
+{% extends 'main.html' %}
+{% block content %}
 
-    <ul>
-        {% for member in room_members %}
-        <li>{{ member._id.username }}</li>
-        {% endfor %}
-    </ul>
-    <button id="leave">Leave</button>
-</body>
+<h1>Room: {{ room.name }}</h1>
+<div id="messages">
+    {% for message in messages %}
+    <div><b>{{ message.sender }}:</b> {{ message.text }}</div>
+    {% endfor %}
+</div>
+<form id="msginputform">
+    <input type="text" id = "msginput" placeholder="message here...">
+    <button type="submit">SEND</button>
+</form>
+<ul>
+    {% for member in room_members %}
+    <li>{{ member._id.username }}</li>
+    {% endfor %}
+</ul>
+<button id="leave">Leave</button>
+
+{% endblock %}
+
+{% block scripts %}
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js"></script>
 <script>
     const socket = io.connect("http://127.0.0.1:5000");
@@ -75,4 +73,5 @@
     });
 
 </script>
-</html>
+
+{% endblock %}
