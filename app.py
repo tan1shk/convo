@@ -4,7 +4,7 @@ from flask_socketio import SocketIO, join_room, leave_room
 from pymongo.errors import DuplicateKeyError
 
 from db import get_user, save_user, get_room, save_room, update_room, get_room_members, add_room_members, remove_room_members 
-from db import get_rooms_for_user, is_room_member, save_messages, get_messages
+from db import get_rooms_for_user, is_room_member, save_messages, get_messages, get_all_users
 
 app = Flask(__name__)
 
@@ -81,7 +81,7 @@ def create_room():
     message = ''
     if request.method == 'POST':
         room_name = request.form.get('room_name')
-        usernames = [username.strip() for username in request.form.get('members').split(',')]
+        usernames = request.form.getlist('members')
 
         if len(room_name) and len(usernames):
             room_id = save_room(room_name, current_user.username)
@@ -91,7 +91,9 @@ def create_room():
             return redirect(url_for('view_room', room_id=room_id))
         else:
             message = "Failed to create room"
-    return render_template('create_room.html', message=message)
+    else:
+        all_users = get_all_users()
+        return render_template('create_room.html', message=message, all_users=all_users)
 
 
 #view room

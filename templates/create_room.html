@@ -7,9 +7,17 @@
 <form method="post">
     <label>Room Name:</label><input type="text" name="room_name">
     <br>
-    <label>Members:</label><input type="text" name="members">
+    <!-- <label>Members:</label><input type="text" name="membs"> -->
     <br>
+    <label>All members</label>
+    <select name="members" multiple>
+        {% for user in all_users %}
+        <option>{{ user }}</option>
+        {% endfor %}
+    </select>
+    
     <button type="submit">Submit</button>
 </form>
+<a href="/"> -- back -- </a>
 
 {% endblock %}

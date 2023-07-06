@@ -27,6 +27,12 @@ def get_user(username):
     else:
         None
 
+def get_all_users():
+    user_data = user_collection.find()
+    users = []
+    for user in user_data:
+        users.append(user['_id'])
+    return users
 
 
 def save_room(room_name, created_by):
@@ -78,3 +84,5 @@ def get_messages(room_id):
     messages = list(messages_collection.find({'room_id': room_id}).sort('created_at',-1).limit(3))
     messages.reverse()
     return messages
+
+get_all_users()

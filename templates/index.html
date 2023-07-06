@@ -13,6 +13,14 @@
         <li><a href="/rooms/{{ room._id.room_id }}">{{ room.room_name }}</a></li>
     {% endfor %}
 </ul>
+<a href="/create-room/">Create Room</a>
+<br>
+<br>
+<a href="/logout/">Logout</a>
+{% else %}
+
+<a href="/login/">Login first</a>
+
 {% endif %}
 
 {% endblock %}
