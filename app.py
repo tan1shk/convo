@@ -41,9 +41,9 @@ def login():
             login_user(user)
             return redirect(url_for('home'))
         else:
-            err_msg = 'Failed to login'
+            err_msg = '!! Login failed, Enter valid username password !!'
     
-    return render_template('login.html', errmsg = err_msg)
+    return render_template('login.html', err_msg = err_msg)
 
 @app.route("/logout/")
 @login_required
@@ -56,20 +56,23 @@ def signup():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     
-    msg_user_exist = ''
+    msg_error = ''
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
         password_input = request.form.get('password')
-        try:
-            save_user(username, email, password_input)
-            user = get_user(username)
-            login_user(user)
-            return redirect(url_for('home'))
-        except DuplicateKeyError:
-            msg_user_exist = '!!! User Already Exist !!!'
+        if not username or not email or not password_input:
+            msg_error = '!! Enter all fields !!'
+        else:
+            try:
+                save_user(username, email, password_input)
+                user = get_user(username)
+                login_user(user)
+                return redirect(url_for('home'))
+            except DuplicateKeyError:
+                msg_error = '!!! Username taken try different username !!!'
     
-    return render_template('signup.html',msguserexist = msg_user_exist)
+    return render_template('signup.html',msg_error = msg_error)
 
 
 
