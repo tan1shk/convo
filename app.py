@@ -150,7 +150,6 @@ def edit_room(room_id):
 def handle_join_room_event(data):
     app.logger.info("{} has joined the room {}".format(data['username'], data['roomid']))
     join_room(data['roomid'])
-    socketio.emit('join_announcement', data)
 
 
 @socketio.on('send_message')
@@ -164,7 +163,6 @@ def handle_send_message_event(data):
 def handle_leave_room_event(data):
     app.logger.info("{} has left the room".format(data['username'], data['roomid']))
     leave_room(data['roomid'])
-    socketio.emit('leave_room_announcement', data)
 
 
 @login_manager.user_loader

@@ -20,9 +20,9 @@
 
         {% for message in messages %}
             {% if message.sender == current_user.username %}
-            <div class="text-right">{{message.text}}<b> :{{message.sender}}</b></div>
+            <div class="text-right">{{message.text}}<b> : You</b></div>
             {% else %}
-            <div><b>{{message.sender}}: </b>{{message.text}}</div>
+            <div><b>{{message.sender}} : </b>{{message.text}}</div>
             {% endif %}
         {% endfor %}
         
@@ -65,34 +65,18 @@
         window.location.href = "http://127.0.0.1:5000/"
     }
 
-
-    socket.on('join_announcement', function(data) {
-        console.log(data);
-        if (data.username !== "{{ username }}"){
-            const newA = document.createElement('div');
-            newA.innerHTML = `<b>${data.username}</b> joined`;
-            document.getElementById('messages').appendChild(newA);
-        }
-    })
-
     socket.on('receive_message', function(data){
         console.log(data);
         const newA = document.createElement('div');
         if (data.username == "{{current_user.username}}") {
-            newA.innerHTML = `<div class = "text-right">${data.msg}<b> :${data.username}</b></div>`;
+            newA.innerHTML = `<div class = "text-right">${data.msg}<b> : You</b></div>`;
         } else {
-            newA.innerHTML = `<div><b>${data.username}: </b>${data.msg}</div>`;
+            newA.innerHTML = `<div><b>${data.username} : </b>${data.msg}</div>`;
         }
         document.getElementById('messages').appendChild(newA);
         scrollbottom()
     })
 
-    socket.on('leave_room_announcement', function (data) {
-        console.log(data);
-        const newN = document.createElement('div');
-        newN.innerHTML = `<b>${data.username}</b> has left the room`;
-        document.getElementById('messages').appendChild(newN);
-    });
 
     function scrollbottom(){
         var messageContainer = document.getElementById("message-container");
