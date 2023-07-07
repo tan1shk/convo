@@ -14,6 +14,8 @@
         </div>
         <div class="flex items-center space-x-4">
             {% if current_user.is_authenticated %}
+                {% block navv %}
+                {% endblock %}
                 <a href="/logout/" class=" px-5 py-3 rounded-xl bg-zinc-900 text-white hover:text-teal-200">LOGOUT</a>
             {% else %}
                 <a href="/login/" class="text-white hover:text-teal-200">LOGIN</a>
