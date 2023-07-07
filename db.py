@@ -81,7 +81,7 @@ def save_messages(room_id, text, sender):
 
 
 def get_messages(room_id):
-    messages = list(messages_collection.find({'room_id': room_id}).sort('created_at',-1).limit(3))
+    messages = list(messages_collection.find({'room_id': room_id}).sort('created_at',-1))
     messages.reverse()
     return messages
 

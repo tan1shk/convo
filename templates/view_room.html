@@ -1,21 +1,29 @@
 {% extends 'main.html' %}
 {% block content %}
 
-<h1>Room: {{ room.name }}</h1>
-<div id="messages">
-    {% for message in messages %}
-    <div><b>{{ message.sender }}:</b> {{ message.text }}</div>
-    {% endfor %}
+<div class="p-5 lg:p-10 text-center">
+    <h1 class="text-3xl lg:text-4xl text-white">{{ room.name }}</h1>
 </div>
-<form id="msginputform">
-    <input type="text" id = "msginput" placeholder="message here...">
-    <button type="submit">SEND</button>
-</form>
-<ul>
-    {% for member in room_members %}
-    <li>{{ member._id.username }}</li>
-    {% endfor %}
-</ul>
+
+<div class="lg:w-2/4 mx-4 lg:mx-auto p-4 bg-teal-50 h-96 overflow-y-auto" id="message-container">
+    <div class="chat-messages space-y-3" id="messages">
+
+        {% for message in messages %}
+            {% if message.sender == current_user.username %}
+            <div class="text-right">{{message.text}}<b> :{{message.sender}}</b></div>
+            {% else %}
+            <div><b>{{message.sender}}: </b>{{message.text}}</div>
+            {% endif %}
+        {% endfor %}
+        
+    </div>
+</div>
+<div class="lg:w-2/4 mt-6 mx-4 lg:mx-auto p-4 bg-zinc-700 rounded-lg">
+    <form class="flex" id="msginputform">
+        <input type="text" id="msginput" class="pl-2 flex-1 mr-3 rounded-lg" placeholder="   Type Here...">
+        <button class="px-5 py-3 rounded-lg text-white bg-zinc-900 hover:bg-zinc-800 hover:text-teal-200" type="submit">Submit</button>
+    </form>
+</div>
 <button id="leave">Leave</button>
 
 {% endblock %}
@@ -61,8 +69,13 @@
     socket.on('receive_message', function(data){
         console.log(data);
         const newA = document.createElement('div');
-        newA.innerHTML = `<b>${data.username}:</b> ${data.msg}`;
+        if (data.username == "{{current_user.username}}") {
+            newA.innerHTML = `<div class = "text-right">${data.msg}<b> :${data.username}</b></div>`;
+        } else {
+            newA.innerHTML = `<div><b>${data.username}: </b>${data.msg}</div>`;
+        }
         document.getElementById('messages').appendChild(newA);
+        scrollbottom()
     })
 
     socket.on('leave_room_announcement', function (data) {
@@ -72,6 +85,12 @@
         document.getElementById('messages').appendChild(newN);
     });
 
+    function scrollbottom(){
+        var messageContainer = document.getElementById("message-container");
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+    
+    scrollbottom()
 </script>
 
 {% endblock %}
