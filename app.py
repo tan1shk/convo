@@ -4,7 +4,7 @@ from flask_socketio import SocketIO, join_room, leave_room
 from pymongo.errors import DuplicateKeyError
 
 from db import get_user, save_user, get_room, save_room, update_room, get_room_members, add_room_members, remove_room_members 
-from db import get_rooms_for_user, is_room_member, save_messages, get_messages, get_all_users
+from db import get_rooms_for_user, is_room_member, save_messages, get_messages, get_room_admin
 
 app = Flask(__name__)
 
@@ -84,7 +84,7 @@ def create_room():
     message = ''
     if request.method == 'POST':
         room_name = request.form.get('room_name')
-        usernames = request.form.getlist('members')
+        usernames = [username.strip() for username in request.form.get('members').split(',')]
 
         if len(room_name) and len(usernames):
             room_id = save_room(room_name, current_user.username)
@@ -93,10 +93,10 @@ def create_room():
             add_room_members(room_id, room_name, usernames, current_user.username)
             return redirect(url_for('view_room', room_id=room_id))
         else:
-            message = "Failed to create room"
+            message = "Dont leave fields empty"
+            return render_template('create_room.html', message=message)
     else:
-        all_users = get_all_users()
-        return render_template('create_room.html', message=message, all_users=all_users)
+        return render_template('create_room.html')
 
 
 #view room
@@ -108,13 +108,14 @@ def view_room(room_id):
     if room and is_room_member(room_id, current_user.username):
         room_members = get_room_members(room_id)
         messages = get_messages(room_id)
-        return render_template('view_room.html', room=room, room_members=room_members, username=current_user.username, messages=messages)
+        admin = get_room_admin(room_id)
+        return render_template('view_room.html', room=room, room_members=room_members, username=current_user.username, messages=messages, admin=admin)
     else:
         return "Room not found", 404
 
 
 #edit room
-@app.route('/rooms/<room_id>/edit', methods = ['GET', 'POST'])
+@app.route('/rooms/<room_id>/edit/', methods = ['GET', 'POST'])
 @login_required
 def edit_room(room_id):
     room = get_room(room_id)
@@ -122,7 +123,6 @@ def edit_room(room_id):
         existing_room_members = [member['_id']['username'] for member in get_room_members(room_id)]
         room_members_str = ",".join(existing_room_members)
 
-        message = ''
         if request.method == 'POST':
             room_name = request.form.get('room_name')
             room['name'] = room_name
@@ -135,11 +135,11 @@ def edit_room(room_id):
                 add_room_members(room_id, room_name, members_to_add, current_user.username)
             if len(members_to_remove):
                 remove_room_members(room_id,members_to_remove)
-            message = 'Edited Successfully'
+            
             room_members_str = ",".join(new_members)
-
+            return redirect(url_for('view_room', room_id=room_id))
         
-        return render_template('edit_room.html', room=room, room_members_str=room_members_str, message=message)
+        return render_template('edit_room.html', room=room, room_members_str=room_members_str)
     else:
         return "Room not found", 404
 

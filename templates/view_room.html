@@ -1,7 +1,12 @@
 {% extends 'main.html' %}
 
 {% block navv %}
+{% if current_user.username == admin.added_by %}
+<button id="leave" class=" px-2 py-3 bg-zinc-700 text-white hover:text-red-300">LEAVE ROOM</button>
+<a href="edit/" class=" px-5 py-3 bg-zinc-700 text-white hover:text-green-300">EDIT ROOM</a>
+{% else %}
 <button id="leave" class=" px-5 py-3 bg-zinc-700 text-white hover:text-red-300">LEAVE ROOM</button>
+{% endif %}
 {% endblock %}
 
 {% block content %}

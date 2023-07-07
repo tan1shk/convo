@@ -27,14 +27,6 @@ def get_user(username):
     else:
         None
 
-def get_all_users():
-    user_data = user_collection.find()
-    users = []
-    for user in user_data:
-        users.append(user['_id'])
-    return users
-
-
 def save_room(room_name, created_by):
     room_id = rooms_collection.insert_one({'name': room_name, 'created_by': created_by, 'created_at': datetime.now()}).inserted_id
     add_room_member(room_id, room_name, created_by, created_by, is_room_admin=True)
@@ -63,6 +55,9 @@ def remove_room_members(room_id, usernames):
 def get_room_members(room_id):
     return list(room_members_collection.find({'_id.room_id' : ObjectId(room_id)}))
 
+def get_room_admin(room_id):
+    return room_members_collection.find_one({'_id.room_id' : ObjectId(room_id), 'is_room_admin': True})
+
 def get_rooms_for_user(username):
     return list(room_members_collection.find({'_id.username': username}))
 
@@ -85,4 +80,4 @@ def get_messages(room_id):
     messages.reverse()
     return messages
 
-get_all_users()
+get_room_admin("64a6ba7f3ab588d2b62d7a17")
