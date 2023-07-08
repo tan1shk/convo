@@ -4,7 +4,7 @@ from flask_socketio import SocketIO, join_room, leave_room
 from pymongo.errors import DuplicateKeyError
 
 from db import get_user, save_user, get_room, save_room, update_room, get_room_members, add_room_members, remove_room_members 
-from db import get_rooms_for_user, is_room_member, save_messages, get_messages, get_room_admin
+from db import get_rooms_for_user, is_room_member, save_messages, get_messages, get_room_admin, is_room_admin
 
 app = Flask(__name__)
 
@@ -119,7 +119,7 @@ def view_room(room_id):
 @login_required
 def edit_room(room_id):
     room = get_room(room_id)
-    if room and is_room_member(room_id, current_user.username):
+    if room and is_room_admin(room_id, current_user.username):
         existing_room_members = [member['_id']['username'] for member in get_room_members(room_id)]
         room_members_str = ",".join(existing_room_members)
 
