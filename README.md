@@ -16,3 +16,5 @@
 ## Run 
 
      python appy.py
+
+## !MAKE SURE MONGODB IS INSTALLED AND MONGOD IS RUNNING! 
